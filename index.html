@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: #2B303A;
+            text-align: center;
+        }
+        p#text {
+            margin: 0;
+            position: absolute;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 22px;
+            font-weight: 100;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #E7E247;
+            transition: all 400ms linear;
+        }
+        p#text.inactive {
+            opacity: 0.25;
+        }
+    </style>
+</head>
+<body>
+    <p id="text">Click & Hold For Awesomeness</p>
+    <canvas id="playground"></canvas>
+    <script src="script.js"></script>
+</body>
+</html>
