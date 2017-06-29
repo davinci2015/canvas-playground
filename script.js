@@ -7,6 +7,7 @@ function Circle({radius, fillStyle, x, y, dx, dy}) {
 
 const canvasHandler = {
     canvas: null,
+    observers: [],
 
     getCanvas2dContext: function () {
         return this.canvas.getContext("2d");
@@ -16,7 +17,28 @@ const canvasHandler = {
         this.canvas = document.getElementById("playground");
         this.canvas.width = width;
         this.canvas.height = height;
-        this.canvas.style.border = "1px solid black";
+    },
+
+    addObserver: function (observer) {
+        if (typeof observer.canvasUpdate !== "function") {
+            throw new Error("Observer 'canvasUpdate' function is not defined!");
+        }
+        this.observers.push(observer);
+    },
+
+    notifyObservers(newData) {
+        this.observers.forEach(listener => {
+            listener.canvasUpdate(newData);
+        });
+    },
+
+    updateCanvasSize: function (newWidth, newHeight) {
+        this.canvas.width = newWidth;
+        this.canvas.height = newHeight;
+        this.notifyObservers({
+            width: newWidth,
+            height: newHeight
+        });
     }
 };
 
@@ -31,6 +53,11 @@ const drawHandler = {
         this.ctx = context;
         this.canvas.height = canvasHeight;
         this.canvas.width = canvasWidth;
+    },
+
+    canvasUpdate: function (newProps) {
+        this.canvas.height = newProps.height;
+        this.canvas.width = newProps.width;
     },
 
     drawCircles: function (circles) {
@@ -70,6 +97,7 @@ const canvasWidth = window.innerWidth;
 
 canvasHandler.init(canvasWidth, canvasHeight);
 drawHandler.init(canvasWidth, canvasHeight, canvasHandler.getCanvas2dContext());
+canvasHandler.addObserver(drawHandler);
 
 let circles = [];
 let drawingInterval = null;
@@ -100,4 +128,8 @@ document.addEventListener("mousedown", function (e) {
 
 document.addEventListener("mouseup", function() {
     clearInterval(generateInterval);
+});
+
+window.addEventListener("resize", function () {
+    canvasHandler.updateCanvasSize(window.innerWidth, window.innerHeight);
 });
